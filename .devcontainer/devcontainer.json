@@ -1,0 +1,16 @@
+{
+    "name": "Langchain Ollama Python Dev Container",
+    "dockerComposeFile": [
+        "../dockers/docker-compose.yml"
+    ],
+    "service": "app",
+    "workspaceFolder": "/workspaces/langchain_ollama_mcp",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    }
+}

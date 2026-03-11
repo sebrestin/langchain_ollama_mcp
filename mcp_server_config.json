@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "weather_tools": {
+      "transport": "sse",
+      "url": "http://weather_tools:8000/sse"
+    },
+    "search_tools": {
+      "transport": "sse",
+      "url": "http://search_tools:8001/sse"
+    }
+  }
+}
