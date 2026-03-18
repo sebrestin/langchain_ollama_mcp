@@ -70,3 +70,4 @@ uvicorn==0.40.0
 wassima==2.0.4
 xxhash==3.6.0
 zstandard==0.25.0
+pytz

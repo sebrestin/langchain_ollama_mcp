@@ -25,6 +25,7 @@ services:
     depends_on:
       - weather_tools
       - search_tools
+      - timezone_tools
   weather_tools:
     build:
       context: ..
@@ -47,6 +48,18 @@ services:
     command: python /workspaces/langchain_ollama_mcp/search_tools/main.py
     ports:
       - "8001:8001"
+    security_opt:
+      - apparmor:unconfined
+  timezone_tools:
+    build:
+      context: ..
+      dockerfile: ./dockers/Dockerfile
+    volumes:
+      - ..:/workspaces/langchain_ollama_mcp:cached
+      - ollama-data:/root/.ollama
+    command: python /workspaces/langchain_ollama_mcp/timezone_tools/main.py
+    ports:
+      - "8002:8002"
     security_opt:
       - apparmor:unconfined
 

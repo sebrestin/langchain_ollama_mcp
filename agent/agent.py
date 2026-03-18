@@ -2,7 +2,7 @@ from typing import Any
 
 from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
-from langchain.messages import HumanMessage, ToolMessage
+from langchain.messages import HumanMessage, ToolMessage, SystemMessage
 
 
 
@@ -41,12 +41,22 @@ class Agent:
         stop marker is received.
         """
 
-        self._agent = create_agent(self._model, self._tools)
+        self._agent = create_agent(
+            self._model,
+              self._tools,
+                name="personal_assistant",
+                system_prompt=SystemMessage(
+                    "You are a helpful assistant that can use tools to answer questions and perform tasks."
+                    "Use the tools when necessary to provide accurate and complete responses."
+                    "Do not limit your tool usage and use them as much as possible to help answer the user's questions as accurately as possible."
+                )
+        )
 
         while True:
             message = input("What's on your mind? \n")
             if message == self.STOP_MARK:
                 break
+            self._context = list()
             await self.process_request(message)
 
     async def process_request(self, message: str) -> Any:
