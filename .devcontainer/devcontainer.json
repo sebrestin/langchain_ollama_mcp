@@ -1,8 +1,7 @@
 {
     "name": "Langchain Ollama Python Dev Container",
     "dockerComposeFile": [
-        "../dockers/docker-compose.yml",
-        "../dockers/docker-compose.gpu.yml"
+        "../dockers/docker-compose.yml"
     ],
     "service": "app",
     "workspaceFolder": "/workspaces/langchain_ollama_mcp",

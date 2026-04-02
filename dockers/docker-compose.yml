@@ -3,9 +3,20 @@ services:
     build:
       context: ..
       dockerfile: ./dockers/Dockerfile
+      args:
+        USERNAME: sebrestin
+        USER_UID: 1000
+        USER_GID: 1000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
     volumes:
       - ..:/workspaces/langchain_ollama_mcp:cached
-      - ollama-data:/root/.ollama
+      - ollama-data:/home/sebrestin/.ollama
     command: ollama serve
     ports:
       - "11434:11434"
@@ -13,6 +24,9 @@ services:
       - apparmor:unconfined
     environment:
       - OLLAMA_HOST=0.0.0.0
+      - TZ=Europe/Bucharest
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     depends_on:
       - weather_tools
       - search_tools
@@ -21,38 +35,54 @@ services:
     build:
       context: ..
       dockerfile: ./dockers/Dockerfile
+      args:
+        USERNAME: sebrestin
+        USER_UID: 1000
+        USER_GID: 1000
     volumes:
       - ..:/workspaces/langchain_ollama_mcp:cached
-      - ollama-data:/root/.ollama
     command: python /workspaces/langchain_ollama_mcp/weather_tools/main.py
     ports:
       - "8000:8000"
     security_opt:
       - apparmor:unconfined
+    environment:
+      - TZ=Europe/Bucharest
   search_tools:
     build:
       context: ..
       dockerfile: ./dockers/Dockerfile
+      args:
+        USERNAME: sebrestin
+        USER_UID: 1000
+        USER_GID: 1000
     volumes:
       - ..:/workspaces/langchain_ollama_mcp:cached
-      - ollama-data:/root/.ollama
     command: python /workspaces/langchain_ollama_mcp/search_tools/main.py
     ports:
       - "8001:8001"
     security_opt:
       - apparmor:unconfined
+    environment:
+      - TZ=Europe/Bucharest
   timezone_tools:
     build:
       context: ..
       dockerfile: ./dockers/Dockerfile
+      args:
+        USERNAME: sebrestin
+        USER_UID: 1000
+        USER_GID: 1000
     volumes:
       - ..:/workspaces/langchain_ollama_mcp:cached
-      - ollama-data:/root/.ollama
     command: python /workspaces/langchain_ollama_mcp/timezone_tools/main.py
     ports:
       - "8002:8002"
     security_opt:
       - apparmor:unconfined
+    environment:
+      - TZ=Europe/Bucharest
+
 
 volumes:
   ollama-data:
