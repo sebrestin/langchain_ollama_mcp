@@ -1,7 +1,7 @@
 """MCP Server for Weather Tools."""
 from mcp.server.fastmcp import FastMCP
 
-import tools as tools
+from tools.weather_tools import tools
 
 
 # Initialize FastMCP server

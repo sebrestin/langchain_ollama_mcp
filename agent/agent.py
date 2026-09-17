@@ -3,6 +3,7 @@ from typing import Any
 from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage, ToolMessage, SystemMessage
+from langgraph.graph.state import CompiledStateGraph
 
 
 
@@ -16,7 +17,7 @@ class Agent:
 
     STOP_MARK = "stop"
 
-    def __init__(self, model: str, thinking: bool, tools: list):
+    def __init__(self, model: str, thinking: bool, tools: list, middleware: list | None = None, context_size: int = 8192):
         """
         Initialize the Agent.
 
@@ -26,13 +27,38 @@ class Agent:
         :type thinking: bool
         :param tools: A list of tool wrappers available to the agent
         :type tools: list
+        :param middleware: Agent middleware to apply, e.g. SkillsMiddleware to enable local skills
+            or MemoryMiddleware to enable long-term memory
+        :type middleware: list | None
+        :param context_size: Context window in tokens. Ollama's 4096 default overflows once a skill is
+            loaded and the model is thinking; 8192 is the largest size at which qwen3 (8B) still fits
+            entirely on an 8 GB GPU
+        :type context_size: int
         """
-        self._model = ChatOllama(model=model, disable_streaming=False, reasoning=thinking)
+        self._model = ChatOllama(model=model, disable_streaming=False, reasoning=thinking, num_ctx=context_size)
         self._thinking = thinking
         self._tools = tools
+        self._middleware = middleware or []
         self._context = list()
-        self._agent = None
-    
+        self._agent = create_agent(
+            self._model,
+              self._tools,
+                name="personal_assistant",
+                middleware=self._middleware,
+                system_prompt=SystemMessage(
+                    "You are a helpful assistant that can use tools to answer questions and perform tasks."
+                    "Use the tools when necessary to provide accurate and complete responses."
+                    "Do not limit your tool usage and use them as much as possible to help answer the user's questions as accurately as possible."
+                )
+        )
+
+    @property
+    def graph(self) -> CompiledStateGraph:
+        """
+        The LangGraph agent graph, which `langgraph dev` serves through the LangGraph API.
+        """
+        return self._agent
+
     async def start(self) -> None:
         """
         Start the interactive agent loop.
@@ -40,17 +66,6 @@ class Agent:
         Continuously prompts the user for input and processes requests until the
         stop marker is received.
         """
-
-        self._agent = create_agent(
-            self._model,
-              self._tools,
-                name="personal_assistant",
-                system_prompt=SystemMessage(
-                    "You are a helpful assistant that can use tools to answer questions and perform tasks."
-                    "Use the tools when necessary to provide accurate and complete responses."
-                    "Do not limit your tool usage and use them as much as possible to help answer the user's questions as accurately as possible."
-                )
-        )
 
         while True:
             message = input("What's on your mind? \n")

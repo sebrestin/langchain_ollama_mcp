@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 
-import tools as tools
+from tools.search_tools import tools
 
 
 # Initialize FastMCP server

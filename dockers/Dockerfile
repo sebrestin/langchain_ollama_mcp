@@ -14,4 +14,10 @@ COPY requirements.txt /tmp/pip-tmp/
 RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
+RUN mkdir -p /home/${USERNAME}/.ollama \
+    && chown ${USER_UID}:${USER_GID} /home/${USERNAME}/.ollama
+
 USER ${USERNAME}
+
+# pip installs made inside the container go to the user's site, so expose their commands too
+ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"

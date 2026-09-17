@@ -24,7 +24,9 @@ def get_weather(lat: float, lon: float, start_date: str, end_date: str) -> dict:
     """
 
     # Setup the Open-Meteo API client with cache and retry on error
-    cache_session = requests_cache.CachedSession('.cache', expire_after = -1)
+    # The cache goes in the user's cache directory because the server's working directory may not be writable,
+    # and it expires because the data of the current and recent days is still being updated
+    cache_session = requests_cache.CachedSession('weather_tools', use_cache_dir = True, expire_after = 3600)
     retry_session = retry(cache_session, retries = 0, backoff_factor = 0.2)
     openmeteo = openmeteo_requests.Client(session = retry_session)
 

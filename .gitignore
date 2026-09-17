@@ -163,3 +163,9 @@ ollama-data/
 tmp/
 temp/
 *.tmp
+
+# LangGraph dev server state
+.langgraph_api/
+
+# Agent memory: personal facts the agent saved about the user
+memory/AGENTS.md

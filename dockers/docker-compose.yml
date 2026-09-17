@@ -19,7 +19,7 @@ services:
       - ollama-data:/home/sebrestin/.ollama
     command: ollama serve
     ports:
-      - "11434:11434"
+      - "11435:11434"
     security_opt:
       - apparmor:unconfined
     environment:
@@ -30,7 +30,6 @@ services:
     depends_on:
       - weather_tools
       - search_tools
-      - timezone_tools
   weather_tools:
     build:
       context: ..
@@ -41,7 +40,8 @@ services:
         USER_GID: 1000
     volumes:
       - ..:/workspaces/langchain_ollama_mcp:cached
-    command: python /workspaces/langchain_ollama_mcp/weather_tools/main.py
+    working_dir: /workspaces/langchain_ollama_mcp
+    command: python -m tools.weather_tools.main
     ports:
       - "8000:8000"
     security_opt:
@@ -58,31 +58,14 @@ services:
         USER_GID: 1000
     volumes:
       - ..:/workspaces/langchain_ollama_mcp:cached
-    command: python /workspaces/langchain_ollama_mcp/search_tools/main.py
+    working_dir: /workspaces/langchain_ollama_mcp
+    command: python -m tools.search_tools.main
     ports:
       - "8001:8001"
     security_opt:
       - apparmor:unconfined
     environment:
       - TZ=Europe/Bucharest
-  timezone_tools:
-    build:
-      context: ..
-      dockerfile: ./dockers/Dockerfile
-      args:
-        USERNAME: sebrestin
-        USER_UID: 1000
-        USER_GID: 1000
-    volumes:
-      - ..:/workspaces/langchain_ollama_mcp:cached
-    command: python /workspaces/langchain_ollama_mcp/timezone_tools/main.py
-    ports:
-      - "8002:8002"
-    security_opt:
-      - apparmor:unconfined
-    environment:
-      - TZ=Europe/Bucharest
-
 
 volumes:
   ollama-data:

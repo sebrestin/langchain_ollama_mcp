@@ -7,10 +7,6 @@
     "search_tools": {
       "transport": "sse",
       "url": "http://search_tools:8001/sse"
-    },
-    "timezone_tools": {
-      "transport": "sse",
-      "url": "http://timezone_tools:8002/sse"
     }
   }
 }
